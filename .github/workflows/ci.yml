@@ -1,0 +1,64 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Validate HTML
+      run: |
+        npm install -g html-validator-cli
+        html-validator --file=index.html --verbose
+    
+    - name: Check for broken links
+      run: |
+        npm install -g linkinator
+        linkinator index.html --recurse --skip "https://instagram.com/*" --skip "https://linkedin.com/*"
+    
+    - name: Lighthouse CI
+      run: |
+        npm install -g @lhci/cli
+        lhci autorun --collect.staticDistDir=. --assert.preset=lighthouse:recommended --assert.assertions.categories:performance=off --assert.assertions.categories:pwa=off || echo "Lighthouse warnings detected"
+
+  deploy-preview:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to Vercel Preview
+      run: |
+        npx vercel --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_SCOPE }}
+      env:
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  deploy-production:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to Vercel Production
+      run: |
+        npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_SCOPE }}
+      env:
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
