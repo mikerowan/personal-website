@@ -19,32 +19,36 @@
   ],
   "rewrites": [
     {
-      "source": "/(.*\\.(md|json|yml|yaml|txt|log|lock|gitignore))",
-      "destination": "/404"
+      "source": "/(.*).md",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/(.*).json",
+      "destination": "/404.html"
     },
     {
       "source": "/package.json",
-      "destination": "/404"
+      "destination": "/404.html"
     },
     {
       "source": "/vercel.json",
-      "destination": "/404"
+      "destination": "/404.html"
     },
     {
       "source": "/.github/(.*)",
-      "destination": "/404"
+      "destination": "/404.html"
     },
     {
       "source": "/CLAUDE.md",
-      "destination": "/404"
+      "destination": "/404.html"
     },
     {
       "source": "/README.md",
-      "destination": "/404"
+      "destination": "/404.html"
     },
     {
       "source": "/SETUP_GUIDE.md",
-      "destination": "/404"
+      "destination": "/404.html"
     }
   ],
   "public": false
