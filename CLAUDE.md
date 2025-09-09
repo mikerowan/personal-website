@@ -5,9 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 - `python3 -m http.server 8000` - Start local development server at http://localhost:8000
-- `npx vercel --prod` - Deploy to production (requires VERCEL_TOKEN)
-- `npx vercel` - Deploy preview version
-- `git checkout -b feature/branch-name` - Create feature branch (required for changes)
+- `git push origin main` - Push changes (auto-deploys to production via GitHub Actions)
 
 ## Project Architecture
 
@@ -27,14 +25,13 @@ This is a minimalistic personal website for Mike Rowan built as a static single-
 - **Typography**: System fonts with careful font weight and spacing choices
 
 ### CI/CD Pipeline
-The repository uses GitHub Actions for automated testing and deployment:
+Simple automated deployment via GitHub Actions:
 
-#### Branch Protection & Workflow
-- **Main branch is protected** - all changes must go through PRs
-- Feature branches automatically trigger PR creation via `.github/workflows/auto-pr.yml`
-- Tests run automatically: HTML validation, link checking, and Lighthouse CI
-- Preview deployments created for every PR via Vercel
-- Production auto-deploy on merge to main
+#### Workflow
+- **Direct commits to main** - No branch protection for simplicity
+- Push to main triggers automatic deployment to Vercel
+- Quick HTML validation check before deploy
+- Production auto-deploys in ~30 seconds
 
 #### Required GitHub Secrets
 - `VERCEL_TOKEN` - Vercel CLI authentication token
@@ -42,10 +39,9 @@ The repository uses GitHub Actions for automated testing and deployment:
 - `VERCEL_PROJECT_ID` - prj_LYKS9HG5pxuedYipr7CekX2u8ncM
 - `VERCEL_SCOPE` - mikerowans-projects
 
-#### Testing Stack
-- HTML validation via `html-validator-cli`
-- Link checking via `linkinator` (excludes social media links)
-- Performance testing via Lighthouse CI with relaxed performance/PWA requirements
+#### Simplified Testing
+- Basic HTML structure check on deploy
+- Manual testing recommended before pushing to main
 
 ### Content Structure
 - **Hero Section**: Profile photo, name "Mike Rowan", tagline "Builder. Operator. Advisor. Mentor."

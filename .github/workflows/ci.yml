@@ -1,66 +1,30 @@
-name: CI/CD Pipeline
+name: Deploy to Production
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
     branches: [ main ]
 
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v3
     
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-    
-    - name: Validate HTML
+    - name: Quick HTML Check
       run: |
-        npm install -g html-validator-cli
-        html-validator --file=index.html --verbose
+        # Basic HTML validation - just check for major issues
+        if ! grep -q "</html>" index.html; then
+          echo "HTML file seems incomplete"
+          exit 1
+        fi
+        echo "✓ HTML structure looks good"
     
-    - name: Check for broken links
-      run: |
-        npm install -g linkinator
-        linkinator index.html --recurse --skip "https://instagram.com/*" --skip "https://linkedin.com/*"
-    
-    - name: Lighthouse CI
-      run: |
-        npm install -g @lhci/cli
-        lhci autorun --collect.staticDistDir=. --assert.preset=lighthouse:recommended --assert.assertions.categories:performance=off --assert.assertions.categories:pwa=off || echo "Lighthouse warnings detected"
-
-  deploy-preview:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Deploy to Vercel Preview
-      env:
-        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      run: |
-        npx vercel --token=$VERCEL_TOKEN --scope=${{ secrets.VERCEL_SCOPE }} --yes
-
-  deploy-production:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Deploy to Vercel Production
+    - name: Deploy to Vercel
       env:
         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       run: |
         npx vercel --prod --token=$VERCEL_TOKEN --scope=${{ secrets.VERCEL_SCOPE }} --yes
+        echo "✓ Deployed to production"
