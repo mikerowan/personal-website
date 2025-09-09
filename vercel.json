@@ -1,3 +1,51 @@
 {
-  "version": 2
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*\\.(md|json|yml|yaml|txt|log|lock|gitignore))",
+      "destination": "/404"
+    },
+    {
+      "source": "/package.json",
+      "destination": "/404"
+    },
+    {
+      "source": "/vercel.json",
+      "destination": "/404"
+    },
+    {
+      "source": "/.github/(.*)",
+      "destination": "/404"
+    },
+    {
+      "source": "/CLAUDE.md",
+      "destination": "/404"
+    },
+    {
+      "source": "/README.md",
+      "destination": "/404"
+    },
+    {
+      "source": "/SETUP_GUIDE.md",
+      "destination": "/404"
+    }
+  ],
+  "public": false
 }

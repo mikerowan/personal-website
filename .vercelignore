@@ -1,0 +1,28 @@
+# Documentation and config files
+*.md
+README.md
+CLAUDE.md
+SETUP_GUIDE.md
+
+# Package files
+package.json
+package-lock.json
+node_modules
+
+# Git and GitHub
+.git
+.github
+.gitignore
+
+# IDE and system files
+.DS_Store
+.vscode
+.idea
+*.swp
+*.swo
+
+# Logs and temp files
+*.log
+*.tmp
+.env
+.env.*
